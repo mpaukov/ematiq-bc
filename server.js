@@ -23,7 +23,6 @@ const update = async () => {
   const newData = await mainUpdate();
 
   mainData = [...newData];
-  console.log("mainData", mainData);
   if (mainData.length == 0) {
     update();
     return;
