@@ -3,7 +3,7 @@ const getHTML = require("html-get");
 const { parse } = require("node-html-parser");
 require("dotenv").config();
 
-const { URL } = process.env;
+const { URL_BC } = process.env;
 
 // Spawn Chromium process once
 const browserlessFactory = createBrowserless();
@@ -25,7 +25,7 @@ const getContent = async (url) => {
 };
 
 const updateData = async () => {
-  return getContent(`${URL}/matches/tennis`)
+  return getContent(`${URL_BC}/matches/tennis`)
     .then((content) => {
       //   console.log(content.html);
       //process.exit();
@@ -54,7 +54,7 @@ async function getData(links) {
   }
   const link = links.shift();
 
-  return getContent(`${URL}${link}`)
+  return getContent(`${URL_BC}${link}`)
     .then((content) => {
       const root = parse(content.html);
       const payout = root
