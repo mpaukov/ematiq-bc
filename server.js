@@ -24,7 +24,12 @@ const update = async () => {
 
   mainData = [...newData];
   if (mainData.length == 0) {
-    update();
+    try {
+      update();
+    } catch (error) {
+      console.log("Error", error);
+      update();
+    }
     return;
   }
   if (clients.length > 0) {
@@ -44,4 +49,9 @@ const update = async () => {
   }, 60000);
 };
 
-update();
+try {
+  update();
+} catch (error) {
+  console.log("Error", error);
+  update();
+}
