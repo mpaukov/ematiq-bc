@@ -108,7 +108,6 @@ const mainUpdate = async () => {
   data = [];
   const links = await updateData();
   await getData(links);
-  console.log("data", data);
   return data;
 };
 

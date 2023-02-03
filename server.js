@@ -46,7 +46,7 @@ const update = async () => {
       clearTimeout(timerID);
       update();
     }
-  }, 60000);
+  }, 120000);
 };
 
 try {
