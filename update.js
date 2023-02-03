@@ -80,14 +80,14 @@ async function getData(links) {
         time.toString().toLowerCase().includes("today")
       ) {
         const calc =
-          (parseFloat(payout[3]) * parseFloat(payout[4])) /
+          (parseFloat(payout[3]) * parseFloat(payout[4]) * 100) /
           (parseFloat(payout[3]) + parseFloat(payout[4]));
 
-        if (calc > 0.98) {
+        if (calc >= 98) {
           data.push({
             title: title.join(" --- "),
             time: time,
-            payout: calc.toFixed(2),
+            payout: calc.toFixed(2) + "%",
           });
         }
       }
