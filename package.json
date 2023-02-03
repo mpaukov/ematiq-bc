@@ -23,7 +23,7 @@
     "dotenv": "^16.0.3",
     "html-get": "^2.9.28",
     "node-html-parser": "^6.1.4",
-    "puppeteer": "^19.6.2",
+    "puppeteer": "^19.6.3",
     "ws": "^8.12.0"
   },
   "devDependencies": {
