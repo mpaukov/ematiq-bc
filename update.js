@@ -14,7 +14,13 @@ const puppeteer = require("puppeteer");
   });
 
   const page = await browser.newPage();
-  await page.goto(url);
+  await page.tracing.start({
+    // categories: ["devtools.timeline"],
+    path: "./.temp/.tracing.json",
+  });
+
+  await page.goto(url, { options: { waitUntil: "load" } });
+
   // await page.goto("https://developer.chrome.com/");
 
   // Set screen size
@@ -25,16 +31,24 @@ const puppeteer = require("puppeteer");
   );
   const localStorage = await page.evaluate(() => JSON.stringify(localStorage));
 
-  console.log("cookies", cookies);
-  console.log("sessionStorage", sessionStorage);
-  console.log("localStorage", localStorage);
+  // console.log("cookies", cookies);
+  // console.log("sessionStorage", sessionStorage);
+  // console.log("localStorage", localStorage);
 
-  await page.tracing.start({
-    categories: ["devtools.timeline"],
-    path: "./.temp/.tracing.json",
-  });
-  await page.goto(url);
   var tracing = JSON.parse(await page.tracing.stop());
+
+  const ttt = tracing.traceEvents.filter(
+    (te) => te.name === "ResourceReceiveResponse"
+  );
+
+  const ddd = ttt.filter((t) => t.args.data.mimeType.includes("png"));
+  console.log("ddd.data", ddd);
+
+  // let performanceTiming = JSON.parse(
+  //   await page.evaluate(() => JSON.stringify(window.performance.getEntries()))
+  // );
+
+  // console.log(performanceTiming);
 
   // Type into search box
   // await page.type(".search-box__input", "automate beyond recorder");
