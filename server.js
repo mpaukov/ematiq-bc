@@ -22,31 +22,31 @@ wsServer.on("connection", (newClient) => {
 const update = async () => {
   const newData = await mainUpdate();
 
-  mainData = [...newData];
-  if (mainData.length == 0) {
-    try {
-      update();
-    } catch (error) {
-      console.log("Error", error);
-      update();
-    }
-    return;
-  }
-  if (clients.length > 0) {
-    clients.forEach((client) => {
-      client.send(JSON.stringify(mainData));
-    });
-  }
+  //   mainData = [...newData];
+  //   if (mainData.length == 0) {
+  //     try {
+  //       update();
+  //     } catch (error) {
+  //       console.log("Error", error);
+  //       update();
+  //     }
+  //     return;
+  //   }
+  //   if (clients.length > 0) {
+  //     clients.forEach((client) => {
+  //       client.send(JSON.stringify(mainData));
+  //     });
+  //   }
 
-  const timerID = setTimeout(() => {
-    try {
-      update();
-    } catch (error) {
-      console.log("Error", error);
-      clearTimeout(timerID);
-      update();
-    }
-  }, 120000);
+  //   const timerID = setTimeout(() => {
+  //     try {
+  //       update();
+  //     } catch (error) {
+  //       console.log("Error", error);
+  //       clearTimeout(timerID);
+  //       update();
+  //     }
+  //   }, 60000);
 };
 
 try {

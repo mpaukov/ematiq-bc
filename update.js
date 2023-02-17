@@ -1,114 +1,77 @@
-const createBrowserless = require("browserless");
-const getHTML = require("html-get");
-const { parse } = require("node-html-parser");
 require("dotenv").config();
+// const https = require("node:https");
+// const axios = require("axios");
 
 const { URL_BC } = process.env;
+const url = `${URL_BC}`;
 
-// Spawn Chromium process once
-const browserlessFactory = createBrowserless();
+const puppeteer = require("puppeteer");
 
-// Kill the process when Node.js exit
-process.on("exit", () => {
-  console.log("closing resources!");
-  browserlessFactory.close();
-});
+(async () => {
+  const browser = await puppeteer.launch({
+    headless: false,
+    userDataDir: "./.temp",
+  });
 
-const getContent = async (url) => {
-  // create a browser context inside Chromium process
-  const browserContext = browserlessFactory.createContext();
-  const getBrowserless = () => browserContext;
-  const result = await getHTML(url, { getBrowserless });
-  // close the browser context after it's used
-  await getBrowserless((browser) => browser.destroyContext());
-  return result;
-};
+  const page = await browser.newPage();
+  await page.goto(url);
+  // await page.goto("https://developer.chrome.com/");
 
-const updateData = async () => {
-  return getContent(`${URL_BC}/matches/tennis`)
-    .then((content) => {
-      //   console.log(content.html);
-      //process.exit();
-      let linksArray = [];
-      const root = parse(content.html);
-      linksArray = [
-        ...new Set(
-          root
-            .getElementsByTagName("A")
-            .map((element) => element.getAttribute("href"))
-            .filter((element) => /^\/tennis\/\S+\/\S+\/\S+/gm.test(element))
-        ),
-      ];
-      return linksArray;
-    })
+  // Set screen size
+  await page.setViewport({ width: 1400, height: 1024 });
+  const cookies = JSON.stringify(await page.cookies());
+  const sessionStorage = await page.evaluate(() =>
+    JSON.stringify(sessionStorage)
+  );
+  const localStorage = await page.evaluate(() => JSON.stringify(localStorage));
 
-    .catch((error) => {
-      console.error(error);
-      process.exit(1);
-    });
-};
+  console.log("cookies", cookies);
+  console.log("sessionStorage", sessionStorage);
+  console.log("localStorage", localStorage);
 
-async function getData(links) {
-  if (links.length == 0) {
-    return;
-  }
-  const link = links.shift();
+  await page.tracing.start({
+    categories: ["devtools.timeline"],
+    path: "./.temp/.tracing.json",
+  });
+  await page.goto(url);
+  var tracing = JSON.parse(await page.tracing.stop());
 
-  return getContent(`${URL_BC}${link}`)
-    .then((content) => {
-      const root = parse(content.html);
-      const payout = root
-        .getElementsByTagName("P")
-        .filter((element) => element.rawAttrs == 'class="height-content"')
-        .map((element) => element.textContent);
-      const time = root
-        .getElementsByTagName("DIV")
-        .filter((element) => element.rawAttrs.includes("bg-event-start-time"))
-        .map((element) => element.nextSibling.textContent);
-      const title = root
-        .getElementsByTagName("P")
-        .filter((element) => element.rawAttrs.includes("truncate"))
-        .map((element) => element.textContent);
+  // Type into search box
+  // await page.type(".search-box__input", "automate beyond recorder");
 
-      if (
-        title.length > 0 &&
-        title.length < 3 &&
-        time.length > 0 &&
-        payout.length > 0 &&
-        payout[3].length > 0 &&
-        payout[4].length > 0 &&
-        time.toString().toLowerCase().includes("today")
-      ) {
-        const calc =
-          (parseFloat(payout[3]) * parseFloat(payout[4]) * 100) /
-          (parseFloat(payout[3]) + parseFloat(payout[4]));
+  // Wait and click on first result
+  // const searchResultSelector = ".search-box__link";
+  // await page.waitForSelector(searchResultSelector);
+  // await page.click(searchResultSelector);
 
-        if (calc >= 98) {
-          data.push({
-            title: title.join(" --- "),
-            time: time,
-            payout: calc.toFixed(2) + "%",
-          });
-        }
-      }
-      return links;
-    })
-    .then((links) => {
-      return getData(links);
-    })
-    .catch((error) => {
-      console.error(error);
-      process.exit(1);
-    });
-}
+  // Locate the full title with a unique string
+  // const textSelector = await page.waitForSelector(
+  //   "text/Customize and automate"
+  // );
+  // const fullTitle = await textSelector.evaluate((el) => el.textContent);
 
-let data = [];
+  // Print the full title
+  // console.log('The title of this blog post is "%s".', fullTitle);
+
+  // await browser.close();
+})();
+
+// const instance = axios.create({
+//   baseURL: `${URL_BC}`,
+//   timeout: 1000,
+//   headers: {
+//     "X-Requested-With": "XMLHttpRequest",
+//     "User-Agent":
+//       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
+//   },
+//   httpsAgent: new https.Agent({ keepAlive: true }),
+// });
+
+// const test = instance.get("/");
+// test.then((res) => console.log("test", res.headers));
 
 const mainUpdate = async () => {
-  data = [];
-  const links = await updateData();
-  await getData(links);
-  return data;
+  return [];
 };
 
 module.exports = { mainUpdate };
