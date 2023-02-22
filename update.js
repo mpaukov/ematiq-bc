@@ -14,12 +14,49 @@ const puppeteer = require("puppeteer");
   });
 
   const page = await browser.newPage();
-  await page.tracing.start({
-    // categories: ["devtools.timeline"],
-    path: "./.temp/.tracing.json",
+  // await page.tracing.start({
+  //   // categories: ["devtools.timeline"],
+  //   path: "./.temp/.tracing.json",
+  // });
+  await page.goto(url);
+  // await page.goto("http://example.com/");
+
+  const responses = [];
+
+  page.on("response", async (response) => {
+    if (response.request().resourceType() === "xhr") {
+      const responseHeaders = response.headers();
+      const contentType = responseHeaders["content-type"];
+      if (contentType && contentType.includes("application/json")) {
+        const responseData = await response.json();
+        responses.push(responseData);
+      }
+    }
   });
 
-  await page.goto(url, { options: { waitUntil: "load" } });
+  // Wait for the page to finish loading and all network requests to complete
+  await page.waitForNavigation({ waitUntil: "networkidle2" });
+
+  // const urls = [];
+  // page.on("response", (response) => {
+  //   const url = response.url();
+  //   urls.push(url);
+  // if (
+  //   url.endsWith(".js") ||
+  //   url.endsWith(".css") ||
+  //   url.endsWith(".png") ||
+  //   url.endsWith(".jpg")
+  // ) {
+  //   urls.push(url);
+  // }
+  // });
+
+  // Wait for the page to finish loading and all network requests to complete
+
+  console.log(responses);
+  // await page.waitForNavigation({ waitUntil: "networkidle2" });
+
+  // console.log(urls);
 
   // await page.goto("https://developer.chrome.com/");
 
@@ -35,14 +72,14 @@ const puppeteer = require("puppeteer");
   // console.log("sessionStorage", sessionStorage);
   // console.log("localStorage", localStorage);
 
-  var tracing = JSON.parse(await page.tracing.stop());
+  // var tracing = JSON.parse(await page.tracing.stop());
 
-  const ttt = tracing.traceEvents.filter(
-    (te) => te.name === "ResourceReceiveResponse"
-  );
+  // const ttt = tracing.traceEvents.filter(
+  //   (te) => te.name === "ResourceReceiveResponse"
+  // );
 
-  const ddd = ttt.filter((t) => t.args.data.mimeType.includes("png"));
-  console.log("ddd.data", ddd);
+  // const ddd = ttt.filter((t) => t.args.data.mimeType.includes("png"));
+  // console.log("ddd.data", ddd);
 
   // let performanceTiming = JSON.parse(
   //   await page.evaluate(() => JSON.stringify(window.performance.getEntries()))
