@@ -29,7 +29,7 @@ async function updateData() {
   // }
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  await page.setDefaultNavigationTimeout(60000);
+  await page.setDefaultNavigationTimeout(0);
   await page.setViewport({ width: 1440, height: 1024 });
 
   const connection = async () => {
