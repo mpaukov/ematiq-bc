@@ -33,23 +33,27 @@ async function updateData() {
   await page.setViewport({ width: 1440, height: 1024 });
 
   const connection = async () => {
-    await page.goto(url);
+    await page.goto(url).catch((error) => console.log(error));
 
     const loginBtn = ".loginModalBtn";
-    await page.waitForSelector(loginBtn);
+    await page.waitForSelector(loginBtn).catch((error) => console.log(error));
     await page.click(loginBtn);
 
     const loginInput = "input[name=login-username]";
-    await page.waitForSelector(loginInput);
+    await page.waitForSelector(loginInput).catch((error) => console.log(error));
     await page.type(loginInput, `${LOGIN}`);
 
     const passwordInput = "input[name=login-password]";
-    await page.waitForSelector(passwordInput);
+    await page
+      .waitForSelector(passwordInput)
+      .catch((error) => console.log(error));
     await page.type(passwordInput, `${PASSWORD}`);
 
     const submitBtn = "input[name=login-submit]";
     await page.waitForSelector(submitBtn);
-    await Promise.all([page.click(submitBtn), page.waitForNavigation()]);
+    await Promise.all([page.click(submitBtn), page.waitForNavigation()]).catch(
+      (error) => console.log(error)
+    );
   };
 
   try {
@@ -107,7 +111,7 @@ async function updateData() {
     await Promise.all([
       page.click(allMatchesSelector),
       page.waitForNavigation(),
-    ]);
+    ]).catch((error) => console.log(error));
   };
 
   try {
