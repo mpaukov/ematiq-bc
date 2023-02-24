@@ -29,24 +29,22 @@ async function updateData() {
   // }
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  await page.setDefaultNavigationTimeout(0);
+  await page.setDefaultNavigationTimeout(120000);
   await page.setViewport({ width: 1440, height: 1024 });
 
   const connection = async () => {
-    await page.goto(url).catch((error) => console.log(error));
+    await page.goto(url);
 
     const loginBtn = ".loginModalBtn";
-    await page.waitForSelector(loginBtn).catch((error) => console.log(error));
+    await page.waitForSelector(loginBtn);
     await page.click(loginBtn);
 
     const loginInput = "input[name=login-username]";
-    await page.waitForSelector(loginInput).catch((error) => console.log(error));
+    await page.waitForSelector(loginInput);
     await page.type(loginInput, `${LOGIN}`);
 
     const passwordInput = "input[name=login-password]";
-    await page
-      .waitForSelector(passwordInput)
-      .catch((error) => console.log(error));
+    await page.waitForSelector(passwordInput);
     await page.type(passwordInput, `${PASSWORD}`);
 
     const submitBtn = "input[name=login-submit]";
@@ -111,7 +109,7 @@ async function updateData() {
     await Promise.all([
       page.click(allMatchesSelector),
       page.waitForNavigation(),
-    ]).catch((error) => console.log(error));
+    ]);
   };
 
   try {
