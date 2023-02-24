@@ -127,12 +127,15 @@ async function updateData() {
   }, 30000);
 }
 
-try {
-  updateData();
-} catch (error) {
-  console.log(error);
+const loop = async () => {
+  try {
+    await updateData();
+  } catch (error) {
+    console.log(error);
+    setTimeout(async () => {
+      await loop();
+    }, 300000);
+  }
+};
 
-  setTimeout(() => {
-    updateData();
-  }, 120000);
-}
+await loop();
