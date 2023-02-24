@@ -2,8 +2,7 @@ const ws = new require("ws");
 const puppeteer = require("puppeteer");
 require("dotenv").config();
 
-const { PORT, URL_BC, LOGIN, PASSWORD } = process.env;
-const url = `${URL_BC}`;
+const { PORT, URL_BC: url, LOGIN, PASSWORD } = process.env;
 const wsServer = new ws.Server({ port: PORT });
 
 let clients = [];
@@ -24,9 +23,6 @@ const equalsCheck = (a, b) => {
 };
 
 async function updateData() {
-  // {
-  //   headless: false;
-  // }
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.setDefaultNavigationTimeout(120000);
@@ -64,15 +60,10 @@ async function updateData() {
   }
 
   page.on("response", async (response) => {
-    if (response.request().resourceType() === "xhr") {
-      if (response.url().includes("/all.dat?_=")) {
-        let data;
-        try {
-          data = JSON.parse(await response.text());
-        } catch (error) {
-          console.log(error);
-        }
-        if (data) {
+    try {
+      if (response.request().resourceType() === "xhr") {
+        if (response.url().includes("/all.dat?_=")) {
+          const data = JSON.parse(await response.text());
           const myData = data.d.rows.map(
             ({
               "home-name": homeName,
@@ -100,6 +91,8 @@ async function updateData() {
           if (!equalsCheck(mainData, myData)) mainData = [...myData];
         }
       }
+    } catch (error) {
+      console.log(error);
     }
   });
 
