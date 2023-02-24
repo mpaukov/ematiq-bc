@@ -138,4 +138,4 @@ const loop = async () => {
   }
 };
 
-await loop();
+loop();
