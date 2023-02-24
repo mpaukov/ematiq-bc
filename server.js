@@ -132,8 +132,8 @@ const loop = async () => {
     await updateData();
   } catch (error) {
     console.log(error);
-    setTimeout(async () => {
-      await loop();
+    setTimeout(() => {
+      loop();
     }, 300000);
   }
 };
